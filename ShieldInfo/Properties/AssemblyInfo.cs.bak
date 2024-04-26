@@ -1,0 +1,17 @@
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyTitle("InfiniteShield")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("InfiniteShield")]
+[assembly: AssemblyCopyright("Copyright ©  2024")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+[assembly: ComVisible(false)]
+[assembly: Guid("b79e5093-525c-472e-ab34-cb8d107a3218")]
+
+[assembly: AssemblyVersion(InfiniteShield.InfiniteShield.PluginVersion)]
+[assembly: AssemblyFileVersion(InfiniteShield.InfiniteShield.PluginVersion)]
