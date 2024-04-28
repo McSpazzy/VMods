@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShieldInfo", "ShieldInfo\ShieldInfo.csproj", "{92D30F94-D8D3-412E-9BEE-3227EB1B1FBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoEitr", "NoEtir\NoEitr.csproj", "{6CA79053-144A-4F9E-B038-B209AED26332}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{92D30F94-D8D3-412E-9BEE-3227EB1B1FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92D30F94-D8D3-412E-9BEE-3227EB1B1FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92D30F94-D8D3-412E-9BEE-3227EB1B1FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CA79053-144A-4F9E-B038-B209AED26332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA79053-144A-4F9E-B038-B209AED26332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CA79053-144A-4F9E-B038-B209AED26332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA79053-144A-4F9E-B038-B209AED26332}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
