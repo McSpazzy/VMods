@@ -1,0 +1,9 @@
+{
+  "name": "RemoveLava",
+  "version_number": "1.0.1",
+  "website_url": "https://github.com/McSpazzy/VMods",
+  "description": "Remove and Add Lava in the crudest way possible",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}
