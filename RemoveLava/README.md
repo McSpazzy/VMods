@@ -9,6 +9,10 @@ Download latest and extract the dll from the zip file into ``[GameDirectory]\Bep
 
 ## Changelog
 
+1.0.2
+
+* Refactor and optimizations
+
 1.0.1
 
 * Fix offset
