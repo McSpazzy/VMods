@@ -1,5 +1,4 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
 using HarmonyLib;
 using System.Reflection;
 
@@ -10,14 +9,12 @@ namespace NoEitr
     {
         public const string PluginGUID = "org.ssmvc.noeitr";
         public const string PluginName = "NoEitr";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.0.1";
 
-        static ManualLogSource _logger;
         Harmony _harmony;
 
         void Awake()
         {
-            _logger = Logger;
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), harmonyInstanceId: PluginGUID);
         }
 
@@ -26,12 +23,23 @@ namespace NoEitr
             _harmony?.UnpatchSelf();
         }
 
-        [HarmonyPatch(typeof(Attack), "GetAttackEitr")]
-        private static class GetAttackEitrPatch
+        [HarmonyPatch(typeof(Humanoid), "GetCurrentWeapon")]
+        private static class GetCurrentWeaponPatch
         {
-            public static void Postfix(ref float __result)
+            public static void Postfix(Character __instance, ref ItemDrop.ItemData __result)
             {
-                __result = 0;
+                if (__instance.IsPlayer() && __result != null)
+                {
+                    if (__result.m_shared.m_attack.m_reloadEitrDrain > 0)
+                    {
+                        __result.m_shared.m_attack.m_reloadEitrDrain = 0;
+                    }
+
+                    if (__result.m_shared.m_attack.m_attackEitr > 0)
+                    {
+                        __result.m_shared.m_attack.m_attackEitr = 0;
+                    }
+                }
             }
         }
     }
