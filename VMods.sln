@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveLava", "RemoveLava\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeatBar", "HeatBar\HeatBar.csproj", "{0F22097D-9764-4668-9313-F2944B784F39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorBubble", "ColorBubble\ColorBubble.csproj", "{CC3703B3-081F-495A-8C37-88808386FD15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{0F22097D-9764-4668-9313-F2944B784F39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F22097D-9764-4668-9313-F2944B784F39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F22097D-9764-4668-9313-F2944B784F39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC3703B3-081F-495A-8C37-88808386FD15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC3703B3-081F-495A-8C37-88808386FD15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC3703B3-081F-495A-8C37-88808386FD15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC3703B3-081F-495A-8C37-88808386FD15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
