@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoEitr", "NoEtir\NoEitr.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveLava", "RemoveLava\RemoveLava.csproj", "{459621DC-9CA7-4B62-8469-1BB8C0965231}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeatBar", "HeatBar\HeatBar.csproj", "{0F22097D-9764-4668-9313-F2944B784F39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{459621DC-9CA7-4B62-8469-1BB8C0965231}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{459621DC-9CA7-4B62-8469-1BB8C0965231}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{459621DC-9CA7-4B62-8469-1BB8C0965231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F22097D-9764-4668-9313-F2944B784F39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F22097D-9764-4668-9313-F2944B784F39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F22097D-9764-4668-9313-F2944B784F39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F22097D-9764-4668-9313-F2944B784F39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
