@@ -5,6 +5,10 @@ Download latest and extract the dll from the zip file into ``[GameDirectory]\Bep
 
 ## Changelog
 
+1.0.1
+
+* some tweaks to prevent bar sticking at 0
+
 1.0.0
 
 * Initial release
