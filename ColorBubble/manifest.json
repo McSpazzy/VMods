@@ -1,8 +1,8 @@
 {
   "name": "ColorBubble",
-  "version_number": "1.0.0",
+  "version_number": "1.0.1",
   "website_url": "https://github.com/McSpazzy/VMods",
-  "description": "Change bubble color and transparency",
+  "description": "Change bubble color and transparency. And add some various bubble related UI things.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2202"
   ]

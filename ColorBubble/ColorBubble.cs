@@ -13,18 +13,27 @@ namespace ColorBubble
     {
         public const string PluginGUID = "org.ssmvc.colorbubble";
         public const string PluginName = "ColorBubble";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.0.1";
 
         private static Harmony _harmony;
-
-        public static ConfigEntry<Color> BubbleColor { get; set; }
         public static ConfigEntry<bool> Enabled { get; set; }
+
+        public static ConfigEntry<bool> EnableBubbleColor { get; set; }
+        public static ConfigEntry<Color> BubbleColor { get; set; }
+
+        public static ConfigEntry<bool> ShowBubblePercent { get; set; }
+        public static ConfigEntry<bool> ShowBubbleHits { get; set; }
 
         public void Awake()
         {
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), harmonyInstanceId: PluginGUID);
-            BubbleColor = base.Config.Bind<Color>("General", "Bubble Color", new Color(1, 0, 0, 0.5f));
-            Enabled = base.Config.Bind<bool>("General", "Enabled", true, "Enable mod");
+            Enabled = base.Config.Bind<bool>("_Global", "isModEnabled", true, "Globally enable or disable this mod.");
+
+            EnableBubbleColor = base.Config.Bind<bool>("Color", "Enable Bubble Color", true, "Enable or disable the bubble color");
+            BubbleColor = base.Config.Bind<Color>("Color", "Bubble Color", new Color(1, 0, 0, 0.5f));
+
+            ShowBubblePercent = base.Config.Bind<bool>("Misc", "Show Bubble Percent", true, "Show remaining bubble integrity");
+            ShowBubbleHits = base.Config.Bind<bool>("Misc", "Show Bubble Hits", true, "Show bubble damage taken");
         }
 
         public void OnDestroy()
@@ -32,12 +41,52 @@ namespace ColorBubble
             _harmony?.UnpatchSelf();
         }
 
+        [HarmonyPatch(typeof(SE_Shield))]
+        private static class ShieldPatch
+        {
+            [HarmonyPatch("Setup")]
+            [HarmonyPostfix]
+            static void SetupPostfix(SE_Shield __instance, Character character)
+            {
+                // System.Console.WriteLine("Shield SETUP");
+            }
+
+            [HarmonyPatch("OnDamaged")]
+            [HarmonyPrefix]
+            static void OnDamagedPrefix(SE_Shield __instance, HitData hit, Character attacker)
+            {
+                // System.Console.WriteLine($"Shield HIT {__instance.m_damage} {__instance.m_absorbDamage} {__instance.m_totalAbsorbDamage}" );
+                if (Enabled.Value && ShowBubbleHits.Value)
+                {
+                    if (hit.GetTotalDamage() > 0)
+                    {
+                        DamageText.instance.ShowText(HitData.DamageModifier.Normal, hit.m_point, hit.GetTotalDamage());
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(StatusEffect))]
+        private static class StatusEffectPatch
+        {
+            [HarmonyPatch("GetIconText")]
+            [HarmonyPostfix]
+            static void GetIconTextPostfix(StatusEffect __instance, ref string __result)
+            {
+                if (Enabled.Value && ShowBubblePercent.Value && __instance is SE_Shield derivedInstance)
+                {
+                    var perc = (derivedInstance.m_damage / derivedInstance.m_totalAbsorbDamage) * 100f;
+                    __result += $" ({100-perc:##}%)";
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(EffectList), "Create")]
         private static class ColorTheBubble
         {
             public static void Postfix(GameObject[] __result)
             {
-                if (!Enabled.Value)
+                if (!Enabled.Value || !EnableBubbleColor.Value)
                 {
                     return;
                 }
@@ -48,7 +97,6 @@ namespace ColorBubble
                     {
                         var renderer = r.GetComponentInChildren<MeshRenderer>();
                         renderer.material.color = BubbleColor.Value;
-
                         // Rainbow still in testing
                         //var rot = r.AddComponent<RotateColor>();
                         //rot.Alpha = BubbleColor.Value.a;
