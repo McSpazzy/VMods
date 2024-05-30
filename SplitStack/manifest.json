@@ -1,0 +1,9 @@
+{
+  "name": "SplitStack",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/McSpazzy/VMods",
+  "description": "Simply allows you to split stacks in to n stacks, or stacks of quantity n.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}

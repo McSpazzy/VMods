@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeatBar", "HeatBar\HeatBar.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorBubble", "ColorBubble\ColorBubble.csproj", "{CC3703B3-081F-495A-8C37-88808386FD15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitStack", "SplitStack\SplitStack.csproj", "{524431B9-63C4-470D-BB36-B81CF7406464}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{CC3703B3-081F-495A-8C37-88808386FD15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC3703B3-081F-495A-8C37-88808386FD15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC3703B3-081F-495A-8C37-88808386FD15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{524431B9-63C4-470D-BB36-B81CF7406464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{524431B9-63C4-470D-BB36-B81CF7406464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{524431B9-63C4-470D-BB36-B81CF7406464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{524431B9-63C4-470D-BB36-B81CF7406464}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
