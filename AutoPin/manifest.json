@@ -1,0 +1,9 @@
+{
+  "name": "AutoPin",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/McSpazzy/VMods",
+  "description": "Press a hotkey to drop a pin on the map at current location",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}
