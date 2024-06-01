@@ -13,7 +13,7 @@ namespace ColorBubble
     {
         public const string PluginGUID = "org.ssmvc.colorbubble";
         public const string PluginName = "ColorBubble";
-        public const string PluginVersion = "1.0.1";
+        public const string PluginVersion = "1.0.2";
 
         private static Harmony _harmony;
         public static ConfigEntry<bool> Enabled { get; set; }
@@ -23,6 +23,11 @@ namespace ColorBubble
 
         public static ConfigEntry<bool> ShowBubblePercent { get; set; }
         public static ConfigEntry<bool> ShowBubbleHits { get; set; }
+
+        public static ConfigEntry<float> ShaderVelocity { get; set; }
+        public static ConfigEntry<float> ShaderRefraction { get; set; }
+        public static ConfigEntry<float> ShaderGlossiness { get; set; }
+        public static ConfigEntry<float> ShaderMetallic { get; set; }
 
         public void Awake()
         {
@@ -34,6 +39,11 @@ namespace ColorBubble
 
             ShowBubblePercent = base.Config.Bind<bool>("Misc", "Show Bubble Percent", true, "Show remaining bubble integrity");
             ShowBubbleHits = base.Config.Bind<bool>("Misc", "Show Bubble Hits", true, "Show bubble damage taken");
+
+            ShaderVelocity = base.Config.Bind<float>("Shader", "ShaderVelocity", 5f, "Wavy Speed");
+            ShaderRefraction = base.Config.Bind<float>("Shader", "ShaderRefraction", 0.1f, "Bubble Distortion");
+            ShaderGlossiness = base.Config.Bind<float>("Shader", "ShaderGlossiness", 0.8f, "Bubble Glossiness");
+            ShaderMetallic = base.Config.Bind<float>("Shader", "ShaderMetallic", 1f, "Bubble Metallic");
         }
 
         public void OnDestroy()
@@ -97,6 +107,12 @@ namespace ColorBubble
                     {
                         var renderer = r.GetComponentInChildren<MeshRenderer>();
                         renderer.material.color = BubbleColor.Value;
+
+                        renderer.material.SetFloat("_WaveVel", ShaderVelocity.Value);
+                        renderer.material.SetFloat("_RefractionIntensity", ShaderRefraction.Value);
+                        renderer.material.SetFloat("_Glossiness", ShaderGlossiness.Value);
+                        renderer.material.SetFloat("_Metallic", ShaderMetallic.Value);
+
                         // Rainbow still in testing
                         //var rot = r.AddComponent<RotateColor>();
                         //rot.Alpha = BubbleColor.Value.a;

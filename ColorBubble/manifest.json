@@ -1,6 +1,6 @@
 {
   "name": "ColorBubble",
-  "version_number": "1.0.1",
+  "version_number": "1.0.2",
   "website_url": "https://github.com/McSpazzy/VMods",
   "description": "Change bubble color and transparency. And add some various bubble related UI things.",
   "dependencies": [
