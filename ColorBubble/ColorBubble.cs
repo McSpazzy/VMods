@@ -20,8 +20,10 @@ namespace ColorBubble
 
         public static ConfigEntry<bool> EnableBubbleColor { get; set; }
         public static ConfigEntry<Color> BubbleColor { get; set; }
+        public static ConfigEntry<bool> BubbleColorSelfOnly { get; set; }
 
         public static ConfigEntry<bool> ShowBubblePercent { get; set; }
+        public static ConfigEntry<bool> ShowBubbleHitPoints { get; set; }
         public static ConfigEntry<bool> ShowBubbleHits { get; set; }
 
         public static ConfigEntry<float> ShaderVelocity { get; set; }
@@ -36,9 +38,11 @@ namespace ColorBubble
 
             EnableBubbleColor = base.Config.Bind<bool>("Color", "Enable Bubble Color", true, "Enable or disable the bubble color");
             BubbleColor = base.Config.Bind<Color>("Color", "Bubble Color", new Color(1, 0, 0, 0.5f));
-
+            
             ShowBubblePercent = base.Config.Bind<bool>("Misc", "Show Bubble Percent", true, "Show remaining bubble integrity");
+            ShowBubbleHitPoints = base.Config.Bind<bool>("Misc", "Show Bubble HitPoints", false, "Show remaining bubble hit points");
             ShowBubbleHits = base.Config.Bind<bool>("Misc", "Show Bubble Hits", true, "Show bubble damage taken");
+            BubbleColorSelfOnly = base.Config.Bind<bool>("Misc", "Self Only", false, "Do not apply bubble colors to other player/creature bubbles");
 
             ShaderVelocity = base.Config.Bind<float>("Shader", "ShaderVelocity", 5f, "Wavy Speed");
             ShaderRefraction = base.Config.Bind<float>("Shader", "ShaderRefraction", 0.1f, "Bubble Distortion");
@@ -54,69 +58,66 @@ namespace ColorBubble
         [HarmonyPatch(typeof(SE_Shield))]
         private static class ShieldPatch
         {
-            [HarmonyPatch("Setup")]
-            [HarmonyPostfix]
-            static void SetupPostfix(SE_Shield __instance, Character character)
-            {
-                // System.Console.WriteLine("Shield SETUP");
-            }
-
             [HarmonyPatch("OnDamaged")]
             [HarmonyPrefix]
             static void OnDamagedPrefix(SE_Shield __instance, HitData hit, Character attacker)
             {
-                // System.Console.WriteLine($"Shield HIT {__instance.m_damage} {__instance.m_absorbDamage} {__instance.m_totalAbsorbDamage}" );
-                if (Enabled.Value && ShowBubbleHits.Value)
-                {
-                    if (hit.GetTotalDamage() > 0)
-                    {
-                        DamageText.instance.ShowText(HitData.DamageModifier.Normal, hit.m_point, hit.GetTotalDamage());
-                    }
-                }
+                if (Enabled.Value && ShowBubbleHits.Value && hit.GetTotalDamage() > 0)
+                    DamageText.instance.ShowText(HitData.DamageModifier.Normal, hit.m_point, hit.GetTotalDamage());
             }
-        }
 
-        [HarmonyPatch(typeof(StatusEffect))]
-        private static class StatusEffectPatch
-        {
-            [HarmonyPatch("GetIconText")]
+            [HarmonyPatch("Setup")]
             [HarmonyPostfix]
-            static void GetIconTextPostfix(StatusEffect __instance, ref string __result)
+            static void SetupPostfix(SE_Shield __instance, Character character)
             {
-                if (Enabled.Value && ShowBubblePercent.Value && __instance is SE_Shield derivedInstance)
-                {
-                    var perc = (derivedInstance.m_damage / derivedInstance.m_totalAbsorbDamage) * 100f;
-                    __result += $" ({100-perc:##}%)";
-                }
-            }
-        }
+                // System.Console.WriteLine($"Shield SETUP {__instance.m_character}");
 
-        [HarmonyPatch(typeof(EffectList), "Create")]
-        private static class ColorTheBubble
-        {
-            public static void Postfix(GameObject[] __result)
-            {
                 if (!Enabled.Value || !EnableBubbleColor.Value)
                 {
                     return;
                 }
 
-                foreach (var r in __result)
+                if (BubbleColorSelfOnly.Value && !character.IsPlayer() )
                 {
-                    if (r.name.Contains("vfx_StaffShield"))
+                    var player = character as Player;
+                    if ((player?.GetPlayerID() ?? 0L) != Player.m_localPlayer.GetPlayerID())
                     {
-                        var renderer = r.GetComponentInChildren<MeshRenderer>();
+                        return;
+                    }
+                }
+
+                foreach (var effect in __instance.m_startEffectInstances)
+                {
+                    if (effect.name.StartsWith("vfx_StaffShield"))
+                    {
+                        // System.Console.WriteLine($"Shield Apply Colors");
+                        var renderer = effect.GetComponentInChildren<MeshRenderer>();
                         renderer.material.color = BubbleColor.Value;
 
                         renderer.material.SetFloat("_WaveVel", ShaderVelocity.Value);
                         renderer.material.SetFloat("_RefractionIntensity", ShaderRefraction.Value);
                         renderer.material.SetFloat("_Glossiness", ShaderGlossiness.Value);
                         renderer.material.SetFloat("_Metallic", ShaderMetallic.Value);
-
-                        // Rainbow still in testing
-                        //var rot = r.AddComponent<RotateColor>();
-                        //rot.Alpha = BubbleColor.Value.a;
                     }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(StatusEffect), "GetIconText")]
+        private static class StatusEffectPatch
+        {
+            public static void Postfix(StatusEffect __instance, ref string __result)
+            {
+                if (Enabled.Value && __instance is SE_Shield derivedInstance)
+                {
+                    if (ShowBubblePercent.Value && ShowBubbleHitPoints.Value)
+                        __result += "\r\n";
+
+                    if (ShowBubblePercent.Value)
+                        __result += $" ({100 - (derivedInstance.m_damage / derivedInstance.m_totalAbsorbDamage) * 100f:##}%)";
+
+                    if (ShowBubbleHitPoints.Value)
+                        __result += $" ({derivedInstance.m_totalAbsorbDamage - derivedInstance.m_damage:####})";
                 }
             }
         }
