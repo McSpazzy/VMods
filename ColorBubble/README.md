@@ -22,5 +22,10 @@ Various bubble things to make your bubbled journey more differenter.
 ##### Show Damage Text On Bubble
 <img src="https://i.imgur.com/0aNrlxt.png" alt="drawing" width="400px"/>
 
+##### Various Shader Manipulations and Customizations
+<img src="https://i.imgur.com/lcXGDLF.png" alt="drawing" width="600px"/>
+
+Glossiness `1.0`, Metallic `0.0`, Refration `0.0`, Velocity `0.0`, Color `#000000FF`, Texture Disabled
+
 ### Installation
 Download latest and extract the dll from the zip file into ``[GameDirectory]\Bepinex\plugins``

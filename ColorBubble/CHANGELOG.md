@@ -5,7 +5,8 @@
 * Add options to modify the bubble shader
 * Add option to display remaining shield hitpoints
 * Add option to only enable color settings for your own bubble. Other players/creatures will have the default.
-
+* Add option to disable bubble texture, making it smoother and more bubble like.
+ 
 ##### Changed
 * Some code refactoring to make it more efficient.
 

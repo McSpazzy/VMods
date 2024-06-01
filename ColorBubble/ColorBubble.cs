@@ -2,8 +2,10 @@
 using BepInEx.Configuration;
 using HarmonyLib;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using UnityEngine;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ColorBubble
 {
@@ -30,6 +32,7 @@ namespace ColorBubble
         public static ConfigEntry<float> ShaderRefraction { get; set; }
         public static ConfigEntry<float> ShaderGlossiness { get; set; }
         public static ConfigEntry<float> ShaderMetallic { get; set; }
+        public static ConfigEntry<bool> ShaderTexture { get; set; }
 
         public void Awake()
         {
@@ -48,6 +51,7 @@ namespace ColorBubble
             ShaderRefraction = base.Config.Bind<float>("Shader", "ShaderRefraction", 0.1f, "Bubble Distortion");
             ShaderGlossiness = base.Config.Bind<float>("Shader", "ShaderGlossiness", 0.8f, "Bubble Glossiness");
             ShaderMetallic = base.Config.Bind<float>("Shader", "ShaderMetallic", 1f, "Bubble Metallic");
+            ShaderTexture = base.Config.Bind<bool>("Shader", "DisableTexture", false, "Makes bubble more smoother");
         }
 
         public void OnDestroy()
@@ -77,7 +81,7 @@ namespace ColorBubble
                     return;
                 }
 
-                if (BubbleColorSelfOnly.Value && !character.IsPlayer() )
+                if (BubbleColorSelfOnly.Value && !character.IsPlayer())
                 {
                     var player = character as Player;
                     if ((player?.GetPlayerID() ?? 0L) != Player.m_localPlayer.GetPlayerID())
@@ -93,6 +97,10 @@ namespace ColorBubble
                         // System.Console.WriteLine($"Shield Apply Colors");
                         var renderer = effect.GetComponentInChildren<MeshRenderer>();
                         renderer.material.color = BubbleColor.Value;
+                        if (ShaderTexture.Value)
+                        {
+                            renderer.material.mainTexture = new Texture2D(1, 1);
+                        }
 
                         renderer.material.SetFloat("_WaveVel", ShaderVelocity.Value);
                         renderer.material.SetFloat("_RefractionIntensity", ShaderRefraction.Value);
@@ -100,6 +108,15 @@ namespace ColorBubble
                         renderer.material.SetFloat("_Metallic", ShaderMetallic.Value);
                     }
                 }
+            }
+
+            // I made this but then never used it. maybe in the future.
+            static void LoadTexture(string path, ref Material material)
+            {
+                var imageData = File.ReadAllBytes(path);
+                var texture = new Texture2D(1, 1);
+                texture.LoadImage(imageData);
+                material.mainTexture = texture;
             }
         }
 
