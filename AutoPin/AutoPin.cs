@@ -12,7 +12,7 @@ namespace AutoPin
     {
         public const string PluginGUID = "org.ssmvc.autopin";
         public const string PluginName = "AutoPin";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.0.1";
 
         private static Harmony _harmony;
         public static ConfigEntry<bool> Enabled { get; set; }
