@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoPin", "AutoPin\AutoPin.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlankMod", "BlankMod\BlankMod.csproj", "{7A8564CA-F44F-49A4-80A4-8FAA83BF6CB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portalvator", "Portalvator\Portalvator.csproj", "{1ECC2E28-9647-471B-8872-0CEF956D9094}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{7A8564CA-F44F-49A4-80A4-8FAA83BF6CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A8564CA-F44F-49A4-80A4-8FAA83BF6CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A8564CA-F44F-49A4-80A4-8FAA83BF6CB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ECC2E28-9647-471B-8872-0CEF956D9094}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ECC2E28-9647-471B-8872-0CEF956D9094}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ECC2E28-9647-471B-8872-0CEF956D9094}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ECC2E28-9647-471B-8872-0CEF956D9094}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

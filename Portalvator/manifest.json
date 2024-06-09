@@ -1,0 +1,9 @@
+{
+  "name": "Portalvator",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/McSpazzy/VMods",
+  "description": "Yet another fast portal mod. Specifically built for vertical travel only.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}
