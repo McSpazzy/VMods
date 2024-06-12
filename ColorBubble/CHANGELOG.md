@@ -1,5 +1,9 @@
 # Change Log
 
+### [1.0.3]
+##### Changed
+* The look of *your* bubble now updates immediately when you change the settings.
+
 ### [1.0.2]
 ##### Added
 * Add options to modify the bubble shader

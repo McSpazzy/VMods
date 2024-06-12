@@ -95,4 +95,29 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <UsingTask TaskName="ZipFiles" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <ZipFilePath ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO.Compression" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        var zipFileDirectory = Path.GetDirectoryName(ZipFilePath);
+        if (!Directory.Exists(zipFileDirectory))
+            Directory.CreateDirectory(zipFileDirectory);      
+        if (File.Exists(ZipFilePath)) 
+            File.Delete(ZipFilePath);
+        using (var zip = ZipFile.Open(ZipFilePath, ZipArchiveMode.Create))
+        foreach (var file in Files)
+          zip.CreateEntryFromFile(file.ItemSpec, Path.GetFileName(file.ItemSpec));       
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ZipFiles Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\manifest.json;$(OutputPath)\icon.png;$(OutputPath)\README.md;$(OutputPath)\CHANGELOG.md" ZipFilePath="..\Bundles\$(AssemblyName).zip" />
+  </Target>
 </Project>

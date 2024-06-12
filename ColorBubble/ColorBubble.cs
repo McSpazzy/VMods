@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ColorBubble
 {
@@ -15,7 +14,7 @@ namespace ColorBubble
     {
         public const string PluginGUID = "org.ssmvc.colorbubble";
         public const string PluginName = "ColorBubble";
-        public const string PluginVersion = "1.0.2";
+        public const string PluginVersion = "1.0.3";
 
         private static Harmony _harmony;
         public static ConfigEntry<bool> Enabled { get; set; }
@@ -33,6 +32,8 @@ namespace ColorBubble
         public static ConfigEntry<float> ShaderGlossiness { get; set; }
         public static ConfigEntry<float> ShaderMetallic { get; set; }
         public static ConfigEntry<bool> ShaderTexture { get; set; }
+
+        private static Texture _defaultTexture;
 
         public void Awake()
         {
@@ -52,19 +53,56 @@ namespace ColorBubble
             ShaderGlossiness = base.Config.Bind<float>("Shader", "ShaderGlossiness", 0.8f, "Bubble Glossiness");
             ShaderMetallic = base.Config.Bind<float>("Shader", "ShaderMetallic", 1f, "Bubble Metallic");
             ShaderTexture = base.Config.Bind<bool>("Shader", "DisableTexture", false, "Makes bubble more smoother");
+
+            Config.SettingChanged += UpdateBubble;
+        }
+
+        private void UpdateBubble(object sender, SettingChangedEventArgs e)
+        {
+            if (!Enabled.Value || !EnableBubbleColor.Value)
+            {
+                return;
+            }
+
+            var existingBubble = Player.m_localPlayer.transform.Find("vfx_StaffShield(Clone)");
+            if (existingBubble)
+            {
+                RecolorBubble(existingBubble.gameObject);
+            }
         }
 
         public void OnDestroy()
         {
             _harmony?.UnpatchSelf();
         }
+        
+        private static void RecolorBubble(GameObject effect)
+        {
+            var renderer = effect.GetComponentInChildren<MeshRenderer>();
+            if (renderer == null)
+            {
+                return;
+            }
 
+            renderer.material.mainTexture = _defaultTexture ?? (_defaultTexture = renderer.material.mainTexture);
+            renderer.material.color = BubbleColor.Value;
+            if (ShaderTexture.Value)
+            {
+                renderer.material.mainTexture = new Texture2D(1, 1);
+            }
+
+            renderer.material.SetFloat("_WaveVel", ShaderVelocity.Value);
+            renderer.material.SetFloat("_RefractionIntensity", ShaderRefraction.Value);
+            renderer.material.SetFloat("_Glossiness", ShaderGlossiness.Value);
+            renderer.material.SetFloat("_Metallic", ShaderMetallic.Value);
+        }
+        
         [HarmonyPatch(typeof(SE_Shield))]
         private static class ShieldPatch
         {
             [HarmonyPatch("OnDamaged")]
             [HarmonyPrefix]
-            static void OnDamagedPrefix(SE_Shield __instance, HitData hit, Character attacker)
+            public static void OnDamagedPrefix(SE_Shield __instance, HitData hit, Character attacker)
             {
                 if (Enabled.Value && ShowBubbleHits.Value && hit.GetTotalDamage() > 0)
                     DamageText.instance.ShowText(HitData.DamageModifier.Normal, hit.m_point, hit.GetTotalDamage());
@@ -72,46 +110,25 @@ namespace ColorBubble
 
             [HarmonyPatch("Setup")]
             [HarmonyPostfix]
-            static void SetupPostfix(SE_Shield __instance, Character character)
+            public static void SetupPostfix(SE_Shield __instance, Character character)
             {
-                // System.Console.WriteLine($"Shield SETUP {__instance.m_character}");
-
                 if (!Enabled.Value || !EnableBubbleColor.Value)
-                {
                     return;
-                }
 
-                if (BubbleColorSelfOnly.Value && !character.IsPlayer())
-                {
-                    var player = character as Player;
-                    if ((player?.GetPlayerID() ?? 0L) != Player.m_localPlayer.GetPlayerID())
-                    {
-                        return;
-                    }
-                }
+                if (BubbleColorSelfOnly.Value && !ReferenceEquals(character, Player.m_localPlayer))
+                    return;
 
                 foreach (var effect in __instance.m_startEffectInstances)
                 {
                     if (effect.name.StartsWith("vfx_StaffShield"))
                     {
-                        // System.Console.WriteLine($"Shield Apply Colors");
-                        var renderer = effect.GetComponentInChildren<MeshRenderer>();
-                        renderer.material.color = BubbleColor.Value;
-                        if (ShaderTexture.Value)
-                        {
-                            renderer.material.mainTexture = new Texture2D(1, 1);
-                        }
-
-                        renderer.material.SetFloat("_WaveVel", ShaderVelocity.Value);
-                        renderer.material.SetFloat("_RefractionIntensity", ShaderRefraction.Value);
-                        renderer.material.SetFloat("_Glossiness", ShaderGlossiness.Value);
-                        renderer.material.SetFloat("_Metallic", ShaderMetallic.Value);
+                        RecolorBubble(effect);
                     }
                 }
             }
 
             // I made this but then never used it. maybe in the future.
-            static void LoadTexture(string path, ref Material material)
+            public static void LoadTexture(string path, ref Material material)
             {
                 var imageData = File.ReadAllBytes(path);
                 var texture = new Texture2D(1, 1);
@@ -172,7 +189,7 @@ namespace ColorBubble
     public class RotateColor : MonoBehaviour
     {
         public float Alpha = 0.5f;
-        static Color GetRainbowColor(float time, float duration, float alpha)
+        public static Color GetRainbowColor(float time, float duration, float alpha)
         {
             var hue = (time % duration) / duration;
             var color = Color.HSVToRGB(hue, 1f, 1f);
@@ -180,7 +197,7 @@ namespace ColorBubble
             return color;
         }
 
-        void Update()
+        public void Update()
         {
             var rendererMag = GetComponentInChildren<MeshRenderer>();
             rendererMag.material.color = GetRainbowColor(Time.time, 1, Alpha);
