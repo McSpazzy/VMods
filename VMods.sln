@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portalvator", "Portalvator\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrostBeGone", "FrostBeGone\FrostBeGone.csproj", "{BF060BDF-C5FA-43C8-8CDF-0ECC83B91DA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BedUnclaimer", "BedUnclaimer\BedUnclaimer.csproj", "{1F9C577E-FA37-49AF-B9E4-89C1C1995035}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{BF060BDF-C5FA-43C8-8CDF-0ECC83B91DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF060BDF-C5FA-43C8-8CDF-0ECC83B91DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF060BDF-C5FA-43C8-8CDF-0ECC83B91DA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F9C577E-FA37-49AF-B9E4-89C1C1995035}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F9C577E-FA37-49AF-B9E4-89C1C1995035}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F9C577E-FA37-49AF-B9E4-89C1C1995035}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F9C577E-FA37-49AF-B9E4-89C1C1995035}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

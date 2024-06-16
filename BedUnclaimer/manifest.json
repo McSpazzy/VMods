@@ -1,0 +1,9 @@
+{
+  "name": "BedUnclaimer",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/McSpazzy/VMods",
+  "description": "Allows you to unclaim any bed you have claimed or revoke someone else's claim on a bed you built.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}
