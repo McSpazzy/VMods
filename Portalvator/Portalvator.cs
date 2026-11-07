@@ -11,7 +11,7 @@ namespace Portalvator
     {
         public const string PluginGUID = "org.ssmvc.portalvator";
         public const string PluginName = "Portalvator";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.1.0";
 
         private static Harmony _harmony;
 
@@ -37,8 +37,8 @@ namespace Portalvator
                     return;
                 }
 
-                var currentZone = ZoneSystem.instance.GetZone(__instance.transform.position);
-                var targetZone = ZoneSystem.instance.GetZone(pos);
+				var currentZone = ZoneSystem.GetZone(__instance.transform.position);
+                var targetZone = ZoneSystem.GetZone(pos);
                 var zoneAdjacent = Mathf.Abs(currentZone.x - targetZone.x) <= 1 && Mathf.Abs(currentZone.y - targetZone.y) <= 1;
 
                 if (zoneAdjacent)

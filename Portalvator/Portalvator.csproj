@@ -43,6 +43,43 @@
   <PropertyGroup>
     <PluginOutputPath Condition=" '$(PluginOutputPath)' == ''">$(GamePath)\BepInEx\plugins</PluginOutputPath>
   </PropertyGroup>
+  <Choose>
+    <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(GamePath) == ''">
+      <PropertyGroup>
+        <GamePath Condition="!Exists('$(GamePath)')">$(HOME)/.steam/steam/steamapps/common/Valheim</GamePath>
+        <GamePath Condition="!Exists('$(GamePath)')">$(HOME)/Library/Application Support/Steam/steamapps/common/Valheim/Contents/MacOS</GamePath>
+      </PropertyGroup>
+    </When>
+    <When Condition="($(OS) == 'Windows_NT') AND $(GamePath) == ''">
+      <PropertyGroup>
+        <GamePath Condition="!Exists('$(GamePath)')">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 892970', 'InstallLocation', null, RegistryView.Registry64, RegistryView.Registry32))</GamePath>
+        <_SteamLibraryPath>$([MSBuild]::GetRegistryValueFromView('HKEY_CURRENT_USER\SOFTWARE\Valve\Steam', 'SteamPath', null, RegistryView.Registry32))</_SteamLibraryPath>
+        <GamePath Condition="!Exists('$(GamePath)') AND '$(_SteamLibraryPath)' != ''">$(_SteamLibraryPath)\steamapps\common\Valheim</GamePath>
+        <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files\Steam\steamapps\common\Valheim</GamePath>
+        <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files (x86)\Steam\steamapps\common\Valheim</GamePath>
+      </PropertyGroup>
+    </When>
+  </Choose>
+  <PropertyGroup>
+    <PluginOutputPath Condition=" '$(PluginOutputPath)' == ''">$(GamePath)\BepInEx\plugins</PluginOutputPath>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(GamePath) == ''">
+      <PropertyGroup>
+        <GamePath Condition="!Exists('$(GamePath)')">$(HOME)/.steam/steam/steamapps/common/Valheim</GamePath>
+        <GamePath Condition="!Exists('$(GamePath)')">$(HOME)/Library/Application Support/Steam/steamapps/common/Valheim/Contents/MacOS</GamePath>
+      </PropertyGroup>
+    </When>
+    <When Condition="($(OS) == 'Windows_NT') AND $(GamePath) == ''">
+      <PropertyGroup>
+        <GamePath Condition="!Exists('$(GamePath)')">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 892970', 'InstallLocation', null, RegistryView.Registry64, RegistryView.Registry32))</GamePath>
+        <_SteamLibraryPath>$([MSBuild]::GetRegistryValueFromView('HKEY_CURRENT_USER\SOFTWARE\Valve\Steam', 'SteamPath', null, RegistryView.Registry32))</_SteamLibraryPath>
+        <GamePath Condition="!Exists('$(GamePath)') AND '$(_SteamLibraryPath)' != ''">$(_SteamLibraryPath)\steamapps\common\Valheim</GamePath>
+        <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files\Steam\steamapps\common\Valheim</GamePath>
+        <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files (x86)\Steam\steamapps\common\Valheim</GamePath>
+      </PropertyGroup>
+    </When>
+  </Choose>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -118,6 +155,13 @@
     </Task>
   </UsingTask>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <ZipFiles Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\manifest.json;$(OutputPath)\icon.png;$(OutputPath)\README.md;$(OutputPath)\CHANGELOG.md" ZipFilePath="..\Bundles\$(AssemblyName).zip" />
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="BundleAssembly" />
+    </GetAssemblyIdentity>
+    <PropertyGroup>
+      <BundleAssemblyVersion>%(BundleAssembly.Version)</BundleAssemblyVersion>
+      <BundleVersion>$([System.Version]::Parse('$(BundleAssemblyVersion)').ToString(3))</BundleVersion>
+    </PropertyGroup>
+    <ZipFiles Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\manifest.json;$(OutputPath)\icon.png;$(OutputPath)\README.md;$(OutputPath)\CHANGELOG.md" ZipFilePath="..\Bundles\$(AssemblyName)-$(BundleVersion).zip" />
   </Target>
 </Project>

@@ -1,27 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CC3703B3-081F-495A-8C37-88808386FD15}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ColorBubble</RootNamespace>
-    <AssemblyName>ColorBubble</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ProjectGuid>{CC3703B3-081F-495A-8C37-88808386FD15}</ProjectGuid>
   </PropertyGroup>
   <Choose>
     <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(GamePath) == ''">
@@ -43,15 +26,6 @@
   <PropertyGroup>
     <PluginOutputPath Condition=" '$(PluginOutputPath)' == ''">$(GamePath)\BepInEx\plugins</PluginOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(GamePath)\BepInEx\core\0Harmony.dll</HintPath>
@@ -62,8 +36,6 @@
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
       <HintPath>$(GamePath)\valheim_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
@@ -75,26 +47,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColorBubble.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CHANGELOG.md">
+    <None Update="CHANGELOG.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="manifest.json">
+    <None Update="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="README.md">
+    <None Update="README.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="icon.png">
+    <None Update="icon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="ZipFiles" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
@@ -107,17 +74,24 @@
         <![CDATA[
         var zipFileDirectory = Path.GetDirectoryName(ZipFilePath);
         if (!Directory.Exists(zipFileDirectory))
-            Directory.CreateDirectory(zipFileDirectory);      
-        if (File.Exists(ZipFilePath)) 
+            Directory.CreateDirectory(zipFileDirectory);
+        if (File.Exists(ZipFilePath))
             File.Delete(ZipFilePath);
         using (var zip = ZipFile.Open(ZipFilePath, ZipArchiveMode.Create))
         foreach (var file in Files)
-          zip.CreateEntryFromFile(file.ItemSpec, Path.GetFileName(file.ItemSpec));       
+          zip.CreateEntryFromFile(file.ItemSpec, Path.GetFileName(file.ItemSpec));
         ]]>
       </Code>
     </Task>
   </UsingTask>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <ZipFiles Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\manifest.json;$(OutputPath)\icon.png;$(OutputPath)\README.md;$(OutputPath)\CHANGELOG.md" ZipFilePath="..\Bundles\$(AssemblyName).zip" />
+  <Target Name="PostBuild" AfterTargets="Build">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="BundleAssembly" />
+    </GetAssemblyIdentity>
+    <PropertyGroup>
+      <BundleAssemblyVersion>%(BundleAssembly.Version)</BundleAssemblyVersion>
+      <BundleVersion>$([System.Version]::Parse('$(BundleAssemblyVersion)').ToString(3))</BundleVersion>
+    </PropertyGroup>
+    <ZipFiles Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\manifest.json;$(OutputPath)\icon.png;$(OutputPath)\README.md;$(OutputPath)\CHANGELOG.md" ZipFilePath="..\Bundles\$(AssemblyName)-$(BundleVersion).zip" />
   </Target>
 </Project>

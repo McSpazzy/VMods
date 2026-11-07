@@ -1,0 +1,9 @@
+{
+  "name": "Crowned",
+  "version_number": "1.0.1",
+  "website_url": "https://github.com/McSpazzy/VMods",
+  "description": "Allows you to disable the crown fear effect on mobs. So you can just use it as normal heavy armor. Other player crown effects in multiplayer are unaffected.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}

@@ -1,8 +1,8 @@
 {
   "name": "ColorBubble",
-  "version_number": "1.0.3",
+  "version_number": "1.1.1",
   "website_url": "https://github.com/McSpazzy/VMods",
-  "description": "Customize protection staff bubble color, transparency, and shader. Show % and hitpoints remaining.",
+  "description": "Customize protection and vengeance staff bubble color, transparency, and shader. Show protection % and hitpoints remaining. Disable vengeance sound effect.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2202"
   ]
