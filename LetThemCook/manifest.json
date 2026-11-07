@@ -1,0 +1,10 @@
+{
+  "name": "LetThemCook",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/McSpazzy/VMods",
+  "description": "Sets a flag on fires/ovens to disable overcooking food items.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202",
+    "ComfyMods-Unstrippable-1.1.0"
+  ]
+}

@@ -118,6 +118,13 @@
     </Task>
   </UsingTask>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <ZipFiles Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\manifest.json;$(OutputPath)\icon.png;$(OutputPath)\README.md;$(OutputPath)\CHANGELOG.md" ZipFilePath="..\Bundles\$(AssemblyName).zip" />
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="BundleAssembly" />
+    </GetAssemblyIdentity>
+    <PropertyGroup>
+      <BundleAssemblyVersion>%(BundleAssembly.Version)</BundleAssemblyVersion>
+      <BundleVersion>$([System.Version]::Parse('$(BundleAssemblyVersion)').ToString(3))</BundleVersion>
+    </PropertyGroup>
+    <ZipFiles Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\manifest.json;$(OutputPath)\icon.png;$(OutputPath)\README.md;$(OutputPath)\CHANGELOG.md" ZipFilePath="..\Bundles\$(AssemblyName)-$(BundleVersion).zip" />
   </Target>
 </Project>

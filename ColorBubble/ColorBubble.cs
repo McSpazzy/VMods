@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +15,7 @@ namespace ColorBubble
     {
         public const string PluginGUID = "org.ssmvc.colorbubble";
         public const string PluginName = "ColorBubble";
-        public const string PluginVersion = "1.0.3";
+        public const string PluginVersion = "1.1.1";
 
         private static Harmony _harmony;
         public static ConfigEntry<bool> Enabled { get; set; }
@@ -33,10 +34,25 @@ namespace ColorBubble
         public static ConfigEntry<float> ShaderMetallic { get; set; }
         public static ConfigEntry<bool> ShaderTexture { get; set; }
 
+        public static ConfigEntry<bool> VengeanceEnableBubbleColor { get; set; }
+        public static ConfigEntry<Color> VengeanceBubbleColor { get; set; }
+
+        public static ConfigEntry<float> VengeanceShaderVelocity { get; set; }
+        public static ConfigEntry<float> VengeanceShaderRefraction { get; set; }
+        public static ConfigEntry<float> VengeanceShaderGlossiness { get; set; }
+        public static ConfigEntry<float> VengeanceShaderMetallic { get; set; }
+        public static ConfigEntry<bool> VengeanceShaderTexture { get; set; }
+
+        public static ConfigEntry<bool> VengeanceDisableAudio { get; set; }
+        public static ConfigEntry<bool> VengeanceBubbleColorSelfOnly { get; set; }
+
+
         private static Texture _defaultTexture;
+        static ManualLogSource _logger;
 
         public void Awake()
         {
+            _logger = Logger;
             _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), harmonyInstanceId: PluginGUID);
             Enabled = base.Config.Bind<bool>("_Global", "isModEnabled", true, "Globally enable or disable this mod.");
 
@@ -54,20 +70,43 @@ namespace ColorBubble
             ShaderMetallic = base.Config.Bind<float>("Shader", "ShaderMetallic", 1f, "Bubble Metallic");
             ShaderTexture = base.Config.Bind<bool>("Shader", "DisableTexture", false, "Makes bubble more smoother");
 
+            VengeanceDisableAudio = base.Config.Bind<bool>("Vengeance", "VengeanceDisableAudio", false, "Away with that horrible looping sound.");
+
+            VengeanceEnableBubbleColor = base.Config.Bind<bool>("Vengeance", "VengeanceEnableBubbleColor", true, "Enable or disable the bubble color");
+            VengeanceBubbleColor = base.Config.Bind<Color>("Vengeance", "VengeanceBubbleColor", new Color(1, 0, 0, 0.5f));
+            VengeanceShaderVelocity = base.Config.Bind<float>("Vengeance", "VengeanceShaderVelocity", 5f, "Wavy Speed");
+            VengeanceShaderRefraction = base.Config.Bind<float>("Vengeance", "VengeanceShaderRefraction", 0.1f, "Bubble Distortion");
+            VengeanceShaderGlossiness = base.Config.Bind<float>("Vengeance", "VengeanceShaderGlossiness", 0.8f, "Bubble Glossiness");
+            VengeanceShaderMetallic = base.Config.Bind<float>("Vengeance", "VengeanceShaderMetallic", 1f, "Bubble Metallic");
+            VengeanceShaderTexture = base.Config.Bind<bool>("Vengeance", "VengeanceDisableTexture", false, "Makes bubble more smoother");
+            VengeanceBubbleColorSelfOnly = base.Config.Bind<bool>("Vengeance", "VengeanceSelfOnly", false, "Do not apply bubble colors to other player/creature bubbles");
+
             Config.SettingChanged += UpdateBubble;
         }
 
         private void UpdateBubble(object sender, SettingChangedEventArgs e)
         {
-            if (!Enabled.Value || !EnableBubbleColor.Value)
+            if (!Enabled.Value)
             {
                 return;
             }
 
-            var existingBubble = Player.m_localPlayer.transform.Find("vfx_StaffShield(Clone)");
-            if (existingBubble)
+            if (EnableBubbleColor.Value)
             {
-                RecolorBubble(existingBubble.gameObject);
+                var existingBubble = Player.m_localPlayer.transform.Find("vfx_StaffShield(Clone)");
+                if (existingBubble)
+                {
+                    RecolorBubble(existingBubble.gameObject);
+                }
+            }
+
+            if (VengeanceEnableBubbleColor.Value)
+            {
+                var existingFrost = Player.m_localPlayer.transform.Find("vfx_FrostOrbs(Clone)");
+                if (existingFrost)
+                {
+                    RecolorFrost(existingFrost.gameObject);
+                }
             }
         }
 
@@ -84,7 +123,7 @@ namespace ColorBubble
                 return;
             }
 
-            renderer.material.mainTexture = _defaultTexture ?? (_defaultTexture = renderer.material.mainTexture);
+            renderer.material.mainTexture = _defaultTexture ??= renderer.material.mainTexture;
             renderer.material.color = BubbleColor.Value;
             if (ShaderTexture.Value)
             {
@@ -96,7 +135,70 @@ namespace ColorBubble
             renderer.material.SetFloat("_Glossiness", ShaderGlossiness.Value);
             renderer.material.SetFloat("_Metallic", ShaderMetallic.Value);
         }
-        
+
+        private static void RecolorFrost(GameObject effect)
+        {
+            var renderer = effect.GetComponentInChildren<MeshRenderer>();
+            if (renderer == null)
+            {
+                return;
+            }
+
+            renderer.material.mainTexture = _defaultTexture ??= renderer.material.mainTexture;
+            renderer.material.color = VengeanceBubbleColor.Value;
+            if (VengeanceShaderTexture.Value)
+            {
+                renderer.material.mainTexture = new Texture2D(1, 1);
+            }
+
+            renderer.material.SetFloat("_WaveVel", VengeanceShaderVelocity.Value);
+            renderer.material.SetFloat("_RefractionIntensity", VengeanceShaderRefraction.Value);
+            renderer.material.SetFloat("_Glossiness", VengeanceShaderGlossiness.Value);
+            renderer.material.SetFloat("_Metallic", VengeanceShaderMetallic.Value);
+        }
+
+        private static void DisableFrostAudio(GameObject effect)
+        {
+            var sound = effect.GetComponentInChildren<ZSFX>();
+            if (sound)
+            {
+                sound.m_playOnAwake = false;
+            }
+        }
+
+        [HarmonyPatch(typeof(StatusEffect))]
+        private static class ReactPatch
+        {
+            [HarmonyPatch("Setup")]
+            [HarmonyPostfix]
+            public static void SetupReactPostfix(StatusEffect __instance, Character character)
+            {
+                if (!Enabled.Value)
+                    return;
+
+                if (!(__instance is SE_React)) return;
+
+                foreach (var effect in __instance.m_startEffectInstances)
+                {
+                    if (effect.name.StartsWith("vfx_FrostOrbs"))
+                    {
+                        if (VengeanceDisableAudio.Value)
+                        {
+                            DisableFrostAudio(effect);
+                        }
+
+                        if (VengeanceEnableBubbleColor.Value)
+                        {
+                            if (VengeanceBubbleColorSelfOnly.Value && !ReferenceEquals(character, Player.m_localPlayer))
+                                return;
+
+                            RecolorFrost(effect);
+                        }
+                    }
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(SE_Shield))]
         private static class ShieldPatch
         {
@@ -110,14 +212,14 @@ namespace ColorBubble
 
             [HarmonyPatch("Setup")]
             [HarmonyPostfix]
-            public static void SetupPostfix(SE_Shield __instance, Character character)
+            public static void SetupShieldPostfix(SE_Shield __instance, Character character)
             {
                 if (!Enabled.Value || !EnableBubbleColor.Value)
                     return;
 
                 if (BubbleColorSelfOnly.Value && !ReferenceEquals(character, Player.m_localPlayer))
                     return;
-
+                
                 foreach (var effect in __instance.m_startEffectInstances)
                 {
                     if (effect.name.StartsWith("vfx_StaffShield"))
@@ -155,7 +257,7 @@ namespace ColorBubble
                 }
             }
         }
-
+        
         // I made this but then never used it. maybe in the future.
         public static List<Vector3> GetCirclePoints3D(int n, float radius)
         {

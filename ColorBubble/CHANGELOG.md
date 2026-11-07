@@ -1,5 +1,14 @@
 # Change Log
 
+### [1.1.1]
+##### Fixed
+* Fixed error when checking for SE_React
+
+### [1.1.0]
+##### Added
+* Add support for Northern Vengeance
+* Add ability to disable Northern Vengeance sound effect.
+
 ### [1.0.3]
 ##### Changed
 * The look of *your* bubble now updates immediately when you change the settings.
