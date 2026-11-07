@@ -11,7 +11,7 @@ namespace Portalvator
     {
         public const string PluginGUID = "org.ssmvc.portalvator";
         public const string PluginName = "Portalvator";
-        public const string PluginVersion = "1.1.0";
+        public const string PluginVersion = "1.2.0";
 
         private static Harmony _harmony;
 

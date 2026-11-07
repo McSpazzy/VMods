@@ -1,6 +1,6 @@
 # Change Log
 
-### [1.1.0]
+### [1.2.0]
 ##### Updated
 * Migrated to SDK-style project
 * Updated for patch `v1.0.21`
